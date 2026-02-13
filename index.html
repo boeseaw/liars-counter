@@ -392,9 +392,9 @@
             const subtitle = document.getElementById('probabilitySubtitle');
             subtitle.textContent = `With ${counter} dice`;
 
-            // Probability of rolling a 2 on a single die (special rules)
+            // Probability of rolling a specific number on a single die (special rules)
             const pSpecial = 1 / 6;
-            // Probability of rolling a 1 or 2 (wilds included)
+            // Probability of rolling one of two specific numbers (wilds included)
             const pWilds = 2 / 6;
 
             for (let k = 1; k <= counter; k++) {
