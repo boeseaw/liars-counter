@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1C2321;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: clamp(8px, 2vw, 20px);
+            padding-bottom: clamp(60px, 10vh, 100px);
+        }
+
+        .title {
+            font-size: clamp(32px, 9vw, 68px);
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin-bottom: clamp(6px, 1.5vw, 16px);
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .counters-section {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: center;
+            gap: clamp(10px, 2.5vw, 24px);
+        }
+
+        .counter-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .counter-label {
+            font-size: clamp(16px, 4.5vw, 32px);
+            color: #7d98A1;
+            margin-bottom: clamp(3px, 1.5vw, 12px);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .counter-value {
+            font-size: clamp(100px, 35vw, 320px);
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            user-select: none;
+            line-height: 1;
+        }
+
+        .counter-value:first-of-type {
+            cursor: pointer;
+        }
+
+        .counter-value.calculated {
+            font-size: clamp(130px, 42vw, 380px);
+        }
+
+        .buttons-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(10px, 3vw, 22px);
+            margin-bottom: clamp(4px, 1vw, 8px);
+        }
+
+        button {
+            padding: clamp(40px, 7.5vw, 100px) clamp(18px, 4vw, 50px);
+            font-size: clamp(28px, 6.5vw, 60px);
+            font-weight: 600;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            active: transform 0.1s;
+            min-height: clamp(75px, 14vw, 180px);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-plus-one {
+            background: #7d98A1;
+        }
+
+        .btn-plus-one:active {
+            background: #6a859d;
+        }
+
+        .btn-minus-one {
+            background: #7d98A1;
+        }
+
+        .btn-minus-one:active {
+            background: #6a859d;
+        }
+
+        .btn-plus-five {
+            background: #7d98A1;
+        }
+
+        .btn-plus-five:active {
+            background: #6a859d;
+        }
+
+        .btn-minus-five {
+            background: #7d98A1;
+        }
+
+        .btn-minus-five:active {
+            background: #6a859d;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #2a3230;
+            padding: clamp(25px, 6vw, 45px);
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            width: clamp(280px, 90vw, 500px);
+        }
+
+        .modal-title {
+            font-size: clamp(18px, 5vw, 26px);
+            color: white;
+            margin-bottom: clamp(15px, 3vw, 22px);
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: clamp(12px, 2.5vw, 22px);
+            font-size: clamp(16px, 4vw, 26px);
+            border: 2px solid #7d98A1;
+            border-radius: 10px;
+            background: #1C2321;
+            color: white;
+            margin-bottom: clamp(15px, 3vw, 22px);
+            box-sizing: border-box;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: #9db5c4;
+        }
+
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(10px, 2vw, 16px);
+        }
+
+        .modal-btn {
+            padding: clamp(12px, 2.5vw, 22px);
+            font-size: clamp(14px, 3.5vw, 22px);
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            min-height: clamp(40px, 8vw, 60px);
+        }
+
+        .modal-btn-confirm {
+            background: #7d98A1;
+        }
+
+        .modal-btn-confirm:active {
+            background: #6a859d;
+        }
+
+        .modal-btn-cancel {
+            background: #5a5a5a;
+        }
+
+        .modal-btn-cancel:active {
+            background: #4a4a4a;
+        }
+
+        .probability-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: clamp(15px, 3vw, 25px);
+        }
+
+        .probability-table th,
+        .probability-table td {
+            padding: clamp(8px, 1.5vw, 14px);
+            text-align: center;
+            border-bottom: 1px solid #7d98A1;
+            color: white;
+            font-size: clamp(11px, 2.5vw, 15px);
+        }
+
+        .probability-table th {
+            background: #2a3230;
+            font-weight: 600;
+        }
+
+        .probability-table tr:hover {
+            background: #353d3a;
+        }
+
+        #probabilityModal .modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+            max-width: 500px;
+        }
+
+        #probabilityModal .modal-title {
+            margin-bottom: clamp(8px, 1.5vw, 12px);
+        }
+
+        .modal-subtitle {
+            font-size: clamp(12px, 2.5vw, 15px);
+            color: #7d98A1;
+            margin-bottom: clamp(10px, 2vw, 18px);
+        }
+    </style>
+</head>
+<body>
+    <div class="title">Liars Counter</div>
+
+    <div class="counters-section">
+        <div class="counter-display">
+            <div class="counter-label">Remaining Dice</div>
+            <div class="counter-value" id="counter">20</div>
+        </div>
+
+        <div class="counter-display">
+            <div class="counter-label">Natural Count</div>
+            <div class="counter-value calculated" id="naturalCount">3.3</div>
+        </div>
+    </div>
+
+    <div class="buttons-container">
+        <button class="btn-plus-one" onclick="incrementCounter(1)">+1</button>
+        <button class="btn-plus-five" onclick="incrementCounter(5)">+5</button>
+        <button class="btn-minus-one" onclick="incrementCounter(-1)">-1</button>
+        <button class="btn-minus-five" onclick="incrementCounter(-5)">-5</button>
+    </div>
+
+    <div class="modal" id="inputModal">
+        <div class="modal-content">
+            <div class="modal-title">Enter New Value</div>
+            <input type="number" class="modal-input" id="manualInput" placeholder="Enter value" />
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-confirm" onclick="confirmInput()">Confirm</button>
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="probabilityModal">
+        <div class="modal-content">
+            <div class="modal-title">Probability Table</div>
+            <div class="modal-subtitle" id="probabilitySubtitle"></div>
+            <table class="probability-table" id="probabilityTable">
+                <thead>
+                    <tr>
+                        <th>Matching Dice</th>
+                        <th>Wilds Included</th>
+                        <th>Special Rules</th>
+                    </tr>
+                </thead>
+                <tbody id="probabilityTableBody">
+                </tbody>
+            </table>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button class="modal-btn modal-btn-cancel" onclick="closeProbabilityModal()" style="grid-column: 1 / -1;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let counter = 20;
+
+        function incrementCounter(amount) {
+            counter += amount;
+            if (counter < 2) {
+                counter = 2;
+            }
+            document.getElementById('counter').textContent = counter;
+            updateNaturalCount();
+        }
+
+        function updateNaturalCount() {
+            const naturalCount = (counter / 6).toFixed(1);
+            document.getElementById('naturalCount').textContent = naturalCount;
+        }
+
+        function openModal() {
+            const modal = document.getElementById('inputModal');
+            modal.classList.add('active');
+            const input = document.getElementById('manualInput');
+            input.value = counter;
+            input.focus();
+            input.select();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('inputModal');
+            modal.classList.remove('active');
+        }
+
+        function confirmInput() {
+            const input = document.getElementById('manualInput');
+            const newValue = parseInt(input.value);
+            if (!isNaN(newValue)) {
+                counter = newValue;
+                document.getElementById('counter').textContent = counter;
+                updateNaturalCount();
+            }
+            closeModal();
+        }
+
+        document.getElementById('counter').addEventListener('click', openModal);
+
+        document.getElementById('manualInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                confirmInput();
+            }
+        });
+
+        document.getElementById('inputModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
+
+        function binomialCoeff(n, k) {
+            if (k > n || k < 0) return 0;
+            if (k === 0 || k === n) return 1;
+            let result = 1;
+            for (let i = 0; i < k; i++) {
+                result = result * (n - i) / (i + 1);
+            }
+            return result;
+        }
+
+        function calculateProbabilityAtLeast(n, k, p) {
+            // P(X >= k) where X ~ Binomial(n, p)
+            if (k > n || k < 0) return 0;
+            if (k === 0) return 1;
+            let prob = 0;
+            for (let i = k; i <= n; i++) {
+                prob += binomialCoeff(n, i) * Math.pow(p, i) * Math.pow(1 - p, n - i);
+            }
+            return prob;
+        }
+
+        function openProbabilityModal() {
+            const modal = document.getElementById('probabilityModal');
+            const tbody = document.getElementById('probabilityTableBody');
+            tbody.innerHTML = '';
+
+            const subtitle = document.getElementById('probabilitySubtitle');
+            subtitle.textContent = `With ${counter} dice`;
+
+            // Probability of rolling a 2 on a single die (special rules)
+            const pSpecial = 1 / 6;
+            // Probability of rolling a 1 or 2 (wilds included)
+            const pWilds = 2 / 6;
+
+            for (let k = 1; k <= counter; k++) {
+                const probSpecial = calculateProbabilityAtLeast(counter, k, pSpecial);
+                const probWilds = calculateProbabilityAtLeast(counter, k, pWilds);
+
+                // Stop if both probabilities are below 1%
+                if (probSpecial < 0.01 && probWilds < 0.01) {
+                    break;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${k}</td>
+                    <td>${(probWilds * 100).toFixed(1)}%</td>
+                    <td>${(probSpecial * 100).toFixed(1)}%</td>
+                `;
+                tbody.appendChild(row);
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeProbabilityModal() {
+            const modal = document.getElementById('probabilityModal');
+            modal.classList.remove('active');
+        }
+
+        document.getElementById('naturalCount').addEventListener('click', openProbabilityModal);
+
+        document.getElementById('probabilityModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeProbabilityModal();
+            }
+        });
+    </script>
+</body>
+</html>
